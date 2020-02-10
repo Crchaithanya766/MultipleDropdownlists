@@ -1,0 +1,170 @@
+﻿@model ECState.Models.Employee
+
+@{
+    ViewBag.Title = "Create";
+}
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+@*<script src="//code.jquery.com/jquery-1.10.2.js"></script>*@
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        $("#Country").change(function () {
+            debugger;
+            $("#State").empty();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("getstates")',
+                dataType: 'json',
+                data: { id: $("#Country").val() },
+                success: function (States) {
+                    $.each(States, function (i, State) {
+                        $("#State").append('<option value="' + State.Value + '">' +
+                            State.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve Countrys.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+
+     $(document).ready(function () {
+        debugger;
+         $("#State").change(function () {
+            debugger;
+             $("#City").empty();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("getcity")',
+                dataType: 'json',
+                data: { id: $("#State").val() },
+                success: function (Cities) {
+                    $.each(Cities, function (i, City) {
+                        $("#City").append('<option value="' + City.Value + '">' +
+                            City.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve Countrys.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+
+<h2>Create</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Employee</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.empname, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.empname, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.empname, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.empfathername, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.empfathername, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.empfathername, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.empsalary, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.empsalary, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.empsalary, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <tr>
+            <th>
+                @Html.Label("enter country")
+            </th>
+            <th>
+                @Html.DropDownList("Country", TempData["c"] as List<SelectListItem>)
+            </th>
+        </tr>
+
+        <tr>
+            <th>
+                @Html.Label("enter state")
+            </th>
+            <th>
+                @Html.DropDownList("State", new SelectList(new SelectList(string.Empty, "Value", "Text"), "select state"))
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.Label("enter city")
+            </th>
+            <th>
+                @Html.DropDownList("City", new SelectList(new SelectList(string.Empty, "Value", "Text"), "select city"))
+            </th>
+        </tr>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.email, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.email, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+
+</div>
+
+<table>
+    <tr>
+        <th>EnterId</th>
+        <th>EnterName</th>
+        <th>Enterfathername</th>
+        <th>EmpSalary</th>
+        <th>countryname</th>
+        <th>statename</th>
+        <th>cityname</th>
+        <th>Enter Email</th>
+        <th>ActivatonCode</th>
+    </tr>
+    @foreach (var item in TempData["e"] as IEnumerable<ECState.Models.emp>)
+    {
+        <tr>
+            <td>@item.empid</td>
+            <td>@item.empname</td>
+            <td>@item.empfathername</td>
+            <td>@item.empsalary</td>
+            <td>@item.country_name</td>
+            <td>@item.state_name</td>
+            <td>@item.city_name</td>
+            <td>@item.email</td>
+            
+
+        </tr>
+    }
+</table>
